@@ -3,7 +3,7 @@ spack:
   packages:
 
     luxe-stack:
-      require: '@main: +devtools+pytools' #+ml'
+      require: '@main: +devtools+pytools+ml'
 
     py-setuptools:
       require: "@69"
