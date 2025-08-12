@@ -1,0 +1,8 @@
+*.pyc
+*.log
+*.swp
+*.lock
+.spack-env
+*~
+packages_nightlies.yaml
+.vscode/

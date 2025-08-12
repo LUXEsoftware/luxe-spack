@@ -1,0 +1,44 @@
+name: concretize-template
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+
+jobs:
+  concretize:
+    runs-on: ubuntu-latest
+    container: ghcr.io/key4hep/key4hep-externals-${{inputs.os}}:main
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout LUXE Spack
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: luxe-spack
+          ref:  ${{ github.sha }}
+      - name: Apply Patches
+        run: |
+          whereami=$(pwd)
+          cd /opt/spack 
+          . ${whereami}/luxe-spack/.cherry-pick
+          cd -
+      - name: Load env and concretize
+        run: |
+          . /opt/setup_spack.sh
+          spack --version
+          spack repo add luxe-spack
+          spack env activate luxe-spack/environments/luxe-${{ inputs.target }}
+          spack concretize --reuse
+          spack spec -Nt > ${GITHUB_WORKSPACE}/spec-${{ inputs.target }}.log
+      - name: Store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: spec-list
+          path: ${GITHUB_WORKSPACE}/spec-${{ inputs.target }}.log
