@@ -1,5 +1,5 @@
 ###############################################################################
-#  Repository: ${IMAGE}/mucoll-sim
+#  Repository: ${IMAGE}/luxe-sw
 #  Tag:        ${VERSION}-alma9
 ###############################################################################
 
@@ -7,7 +7,7 @@ ARG OS=alma9
 # mucoll tag is only available recent tag
 FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-08-05-mucoll
 
-ARG LUXE_SHA=e49a0639ff987a84fa0c6263e068776f9d7b6f67
+ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
 ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
 
 # Adding repository: LUXE
