@@ -20,7 +20,7 @@ permissions:
   attestations: write
 
 jobs:
-  build-sim:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
