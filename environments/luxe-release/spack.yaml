@@ -51,7 +51,7 @@ spack:
         prefix: /usr
 
     all:
-      target: [x86_64]
+      target: []
       variants: build_type=RelWithDebInfo cxxstd=20
       buildable: true
       providers:
@@ -62,6 +62,9 @@ spack:
     unify: true
 
   view: false
+
+  include:
+  - ../luxe-common/packages.yaml
 
   specs:
   - luxe-stack
