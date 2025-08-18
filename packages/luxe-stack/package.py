@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from spack.package import *
 from spack.pkg.k4.key4hep_stack import *
 
-class Luxestack(BundlePackage, Key4hepPackage):
+class LuxeStack(BundlePackage, Key4hepPackage):
     """Bundle package to install LUXE Software Stack"""
     
     homepage = 'https://github.com/LUXEsoftware'
