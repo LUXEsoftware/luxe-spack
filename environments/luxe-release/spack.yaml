@@ -8,6 +8,9 @@ spack:
     py-setuptools:
       require: "@69"
 
+    dd4hep:
+      require: '+edm4hep'
+
     # Use the system OpenGL as recommended by spack
     # See https://github.com/key4hep/key4hep-spack/issues/318 and
     # https://github.com/key4hep/key4hep-spack/issues/516
