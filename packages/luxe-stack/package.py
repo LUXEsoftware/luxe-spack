@@ -43,6 +43,8 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on("cxx", type="build")
     depends_on("fortran", type="build")
 
+    depends_on('root')
+    depends_on('dd4hep')
 
     ##################### developer tools #################
     #######################################################
