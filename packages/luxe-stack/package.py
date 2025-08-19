@@ -46,7 +46,8 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on('root')
     depends_on('dd4hep')
 
-    depends_on('py-xsuite')
+    #depends_on('py-xsuite')
+    depends_on('lxsim')
 
     ##################### developer tools #################
     #######################################################
