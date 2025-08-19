@@ -46,6 +46,8 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on('root')
     depends_on('dd4hep')
 
+    depends_on('xsuite')
+
     ##################### developer tools #################
     #######################################################
     with when('+devtools'):
