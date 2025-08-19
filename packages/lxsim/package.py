@@ -14,7 +14,7 @@ class Lxsim(CMakePackage, Key4hepPackage):
 
     depends_on('geant4')
     depends_on('doxygen')
-    depends_on('glib'), type='build')
+    depends_on('glib')
 
     def cmake_args(self):
         args = []  
