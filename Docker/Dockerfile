@@ -31,7 +31,6 @@ ARG OCI_USERNAME
 RUN --mount=type=secret,id=ocipass \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) && \
     . /opt/setup_spack.sh && \
-    git config --global url."https://${OCI_PASSWORD}@github.com/".insteadOf "https://github.com/" && \
     spack repo add ${SPACK_ROOT}/var/luxe-spack && \
     if [ -n "${SPACK_BUILDCACHE}" ]; then \
         spack mirror remove local-buildcache || true; \
