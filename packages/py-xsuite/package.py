@@ -21,4 +21,4 @@ class PyXsuite(PythonPackage):
     depends_on("py-lark")
     depends_on("py-pytest")
     depends_on("py-sphinx")
-    depends_on("py-sphinx_rtd_theme")
+    #depends_on("py-sphinx_rtd_theme")
