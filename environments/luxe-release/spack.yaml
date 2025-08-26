@@ -77,5 +77,3 @@ spack:
 
   specs:
   - luxe-stack
-  repos:
-    luxe: /code/luxe-spack
