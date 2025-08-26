@@ -6,10 +6,10 @@ spack:
       require: '@main: +devtools+pytools'
 
     py-setuptools:
-      require: "@69"
+      require: '@69'
 
     dd4hep:
-      require: '+edm4hep'
+      require: +edm4hep
 
     py-xsuite:
       require: '@main'
@@ -24,29 +24,29 @@ spack:
     # (it may not work if the versions in the current system are not what's required
     # but that hasn't happened yet)
     opengl:
-      buildable: False
+      buildable: false
       externals:
       - spec: opengl@99
         prefix: /usr
     openglu:
-      buildable: False
+      buildable: false
       externals:
       - spec: openglu@99
         prefix: /usr
     mesa:
-      buildable: False
+      buildable: false
       externals:
       - spec: mesa@99
         prefix: /usr
     mesa-glu:
-      buildable: False
+      buildable: false
       externals:
       - spec: mesa-glu@99
         prefix: /usr
     # Use the system kerberos, otherwise the tickets obtained at login with the
     # system version don't appear for the spack kerberos (happening on lxplus at least)
     krb5:
-      buildable: False
+      buildable: false
       externals:
       - spec: krb5@99
         prefix: /usr
@@ -54,7 +54,7 @@ spack:
     # different and things like ssh using kerberos won't work (by extension authentication
     # for git with ssh with kerberos)
     openssh:
-      buildable: False
+      buildable: false
       externals:
       - spec: openssh@99
         prefix: /usr
@@ -77,3 +77,5 @@ spack:
 
   specs:
   - luxe-stack
+  repos:
+    luxe: /code/luxe-spack
