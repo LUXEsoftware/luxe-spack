@@ -5,7 +5,7 @@ packages:
   root:
     variants: +davix+fftw+gsl+math+minuit+mlp+opengl~postgres~pythia6+pythia8+python+r+root7+roofit+rpath~shadow+sqlite+ssl+tbb+threads+tmva+unuran+vc+vdt+x+xml+xrootd cxxstd=17 build_type=RelWithDebInfo
   all:
-    target: []
+    target: [x86_64]
     variants: build_type=Release cxxstd=20
     buildable: true
     providers:
