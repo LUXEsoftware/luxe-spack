@@ -11,3 +11,5 @@ class PyXobjects(PythonPackage):
     version("0.5.2", sha256="869e5c4991c6b28f5a6d5333a0f4d25e2542ba818e191373b1728723a65b6c79")
 
     depends_on("c", type="build")
+    
+    depends_on('py-setuptools')
