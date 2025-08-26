@@ -18,6 +18,10 @@ RUN . /opt/setup_spack.sh && \
     git checkout ${LUXE_SHA} && \
     cd -
 
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
@@ -50,13 +54,13 @@ RUN . /opt/setup_spack.sh && \
 
 # Concretizing the LUXE stack reusing system packages as external
 RUN . ${HOME}/setup_env.sh && \
+    spack external find --not-buildable rust && \
     spack concretize --reuse
 
 # Installing fragments of dependency tree in separate layers for cached debugging
 ENV SPACK_INSTALL_OPTS="--only-concrete --no-add --fail-fast"
 
 RUN . ${HOME}/setup_env.sh && \
-    spack spec -NIt && \
     spack install ${SPACK_INSTALL_OPTS} && \
     spack clean -a
 
