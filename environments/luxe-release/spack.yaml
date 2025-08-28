@@ -2,6 +2,15 @@ spack:
 
   packages:
 
+    rust:
+      externals:
+      - spec: rust@1.89.0
+        prefix: /root/.cargo
+        extra_attributes:
+          cargo: /root/.cargo/bin/cargo
+          compilers:
+            rust: /root/.cargo/bin/rustc
+      buildable: false
     luxe-stack:
       require: '@main: +devtools+pytools'
 

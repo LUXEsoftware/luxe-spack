@@ -19,8 +19,8 @@ RUN . /opt/setup_spack.sh && \
     cd -
 
 # Get Rust
-#RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-#RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
+    echo "source $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
@@ -46,7 +46,7 @@ RUN . /opt/setup_spack.sh && \
     cd ${SPACK_ROOT}/var/luxe-spack/environments/luxe-release && \
     spack env activate . && \
     cd - && \
-    echo ". /opt/setup_spack.sh" > ${HOME}/setup_env.sh && \
+    echo ". /opt/setup_spack.sh" >> ${HOME}/setup_env.sh && \
     echo "cd ${SPACK_ROOT}/var/luxe-spack/environments/luxe-release" >> ${HOME}/setup_env.sh && \
     echo "spack env activate ." >> ${HOME}/setup_env.sh && \
     echo "cd -" >> ${HOME}/setup_env.sh && \
@@ -54,7 +54,7 @@ RUN . /opt/setup_spack.sh && \
 
 # Concretizing the LUXE stack reusing system packages as external
 RUN . ${HOME}/setup_env.sh && \
-    #spack external find --not-buildable rust && \
+    spack external find --not-buildable rust && \
     spack concretize --reuse
 
 # Installing fragments of dependency tree in separate layers for cached debugging
