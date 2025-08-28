@@ -51,7 +51,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ inputs.registry }}/${{ github.repository_owner }}/luxe-sw-${{ inputs.os }}
+          #images: ${{ inputs.registry }}/${{ github.repository_owner }}/luxe-sw-${{ inputs.os }}
+          images: ${{ inputs.registry }}/${{ github.repository_owner }}/luxe-sw
+          flavor: latest=true
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v6
