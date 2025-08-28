@@ -5,17 +5,11 @@ spack:
     luxe-stack:
       require: '@main: +devtools+pytools'
 
-    py-setuptools:
-      require: '@69'
-
-    python:
-      require: '@3.12'
-
     dd4hep:
       require: +edm4hep
 
     py-xsuite:
-      require: '@main'
+      require: '@0.36.7'
 
     #lxsim:
     #  require: '@master'

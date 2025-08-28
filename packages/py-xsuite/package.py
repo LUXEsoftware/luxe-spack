@@ -13,6 +13,7 @@ class PyXsuite(PythonPackage):
 
     version("0.36.7", sha256="0425b01189f2cdd5ed2782895596aacd439232365c914d45f46ab14d85e267f1")
 
+    '''
     depends_on("py-pandas")
     depends_on("py-scipy")
     depends_on("py-lark")
@@ -22,6 +23,7 @@ class PyXsuite(PythonPackage):
     depends_on("py-numpy")
     depends_on("py-wheel")
     depends_on("py-poetry")
+    '''
 
     #other parts of the xsuite suite
     depends_on("py-xtrack@0.88.8")
