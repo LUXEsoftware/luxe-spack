@@ -1,5 +1,6 @@
 from spack_repo.builtin.build_systems.python import PythonPackage
 from spack.package import *
+import os
 
 
 class PyXsuite(PythonPackage):
@@ -32,3 +33,8 @@ class PyXsuite(PythonPackage):
     depends_on("py-xdeps")
     depends_on("py-xpart@0.23.1")
     depends_on("py-xwakes")
+
+    def setup_build_environment(self, env):
+        # Skip kernel building during spack build to avoid the lib directory issue
+        # Kernels will be built when the package is first used
+        env.set('SKIP_KERNEL_BUILD', '1')
