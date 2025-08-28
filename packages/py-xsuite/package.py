@@ -21,7 +21,6 @@ class PyXsuite(PythonPackage):
     depends_on('py-setuptools')
     depends_on("py-numpy")
     depends_on("py-wheel")
-    depends_on("py-poetry")
 
     #other parts of the xsuite suite
     depends_on("py-xtrack@0.88.8")
