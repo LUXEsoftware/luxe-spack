@@ -20,7 +20,7 @@ RUN . /opt/setup_spack.sh && \
 
 # Get Rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
-    echo "source $HOME/.cargo/env" > ${HOME}/setup_env.sh
+    echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
