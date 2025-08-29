@@ -23,8 +23,8 @@ spack:
     #lxsim:
     #  require: '@master'
 
-    luxegeo:
-      require: '@main'
+    #luxegeo:
+    #  require: '@main'
 
     # Use the system OpenGL as recommended by spack
     # See https://github.com/key4hep/key4hep-spack/issues/318 and

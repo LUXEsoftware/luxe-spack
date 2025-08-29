@@ -45,7 +45,7 @@ class LuxeStack(BundlePackage, Key4hepPackage):
 
     depends_on('root')
     depends_on('dd4hep')
-    depends_on('luxegeo')
+    #depends_on('luxegeo')
 
     depends_on('ptarmigan')
     depends_on('py-xsuite')
