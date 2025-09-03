@@ -10,7 +10,7 @@ class Lxsim(CMakePackage, Key4hepPackage):
 
     maintainers = ['']
 
-    version('master',  branch='master')
+    version('bsm_npod_calice_ecal_g4v11',  branch='bsm_npod_calice_ecal_g4v11')
 
     depends_on('geant4')
     depends_on('doxygen')

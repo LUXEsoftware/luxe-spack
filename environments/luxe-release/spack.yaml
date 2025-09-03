@@ -20,8 +20,8 @@ spack:
     ptarmigan:
       require: '@1.4.2'
 
-    #lxsim:
-    #  require: '@master'
+    lxsim:
+      require: '@bsm_npod_calice_ecal_g4v11'
 
     #luxegeo:
     #  require: '@main'
