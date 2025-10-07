@@ -52,11 +52,6 @@ class PyXsuite(PythonPackage):
     depends_on("py-xwakes")
 
     def setup_build_environment(self, env):
-        lib_dir = os.path.join('build', 'lib.linux-x86_64-cpython-312', 'xsuite', 'lib')
-        os.makedirs(lib_dir, exist_ok=True)
-
-    def build_args(self, spec, prefix):
-        args = []
-        # You could add custom build args here if xsuite needs them
-        return args
-    
+        # Skip kernel building during spack build to avoid the lib directory issue
+        # Kernels will be built when the package is first used
+        env.set('SKIP_KERNEL_BUILD', '1')

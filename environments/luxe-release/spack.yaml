@@ -17,8 +17,8 @@ spack:
     python:
       require: '@3.12'
 
-    #dd4hep:
-    #  require: +edm4hep
+    dd4hep:
+      require: +edm4hep
 
     py-xsuite:
       require: '@0.36.7'
@@ -29,8 +29,11 @@ spack:
     ptarmigan:
       require: '@1.4.2'
 
-    #lxsim:
-    #  require: '@master'
+    lxsim:
+      require: '@bsm_npod_calice_ecal_g4v11'
+
+    #luxegeo:
+    #  require: '@main'
 
     # Use the system OpenGL as recommended by spack
     # See https://github.com/key4hep/key4hep-spack/issues/318 and
