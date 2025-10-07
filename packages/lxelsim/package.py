@@ -1,12 +1,12 @@
 from spack.package import *
 from spack.pkg.k4.key4hep_stack import *
 
-class Lxsim(CMakePackage, Key4hepPackage):
+class Lxelsim(CMakePackage, Key4hepPackage):
     """LUXE simulation framework"""
 
-    homepage = "https://github.com/LUXEsoftware/lxsim"
-    git      = "https://github.com/LUXEsoftware/lxsim.git"
-    url      = "https://github.com/LUXEsoftware/lxsim/archive/refs/tags/v00-01.tar.gz"
+    homepage = "https://github.com/LUXEsoftware/lxelsim"
+    git      = "https://github.com/LUXEsoftware/lxelsim.git"
+    url      = "https://github.com/LUXEsoftware/lxelsim/archive/refs/tags/v00-01.tar.gz"
 
     maintainers = ['']
 
