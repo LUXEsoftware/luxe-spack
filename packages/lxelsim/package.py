@@ -18,6 +18,6 @@ class Lxelsim(CMakePackage, Key4hepPackage):
 
     def cmake_args(self):
         args = []  
-        args.append(self.define_from_variant('CMAKE_CXX_STANDARD', 'cxxstd'))
-        args.append(self.define('BUILD_TESTING', self.run_tests))
+        args.append(self.define('CMAKE_CXX_STANDARD', '20'))
+        #args.append(self.define('BUILD_TESTING', self.run_tests))
         return args
