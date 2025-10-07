@@ -5,7 +5,7 @@
 
 ARG OS=alma9
 # mucoll tag is only available recent tag
-FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-08-05-mucoll
+FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-10-07
 
 ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
 ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
@@ -15,8 +15,7 @@ RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
     git clone https://github.com/${GITHUB_REPOSITORY} ${REPOPATH} && \
     cd ${REPOPATH} && \
-    git checkout ${LUXE_SHA} && \
-    cd -
+    git checkout ${LUXE_SHA}
 
 # Get Rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
@@ -26,8 +25,7 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
     cd /opt/spack && \
-    . ${REPOPATH}/.cherry-pick && \
-    cd -
+    . ${REPOPATH}/.cherry-pick
 
 # Add the package repositories
 ARG SPACK_BUILDCACHE
@@ -37,7 +35,6 @@ RUN --mount=type=secret,id=ocipass \
     . /opt/setup_spack.sh && \
     spack repo add ${SPACK_ROOT}/var/luxe-spack && \
     if [ -n "${SPACK_BUILDCACHE}" ]; then \
-        spack mirror remove local-buildcache || true; \
         spack mirror add --oci-username "${OCI_USERNAME}" --oci-password "${OCI_PASSWORD}" --unsigned --autopush local-buildcache "${SPACK_BUILDCACHE}";\
     fi
 
