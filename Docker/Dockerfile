@@ -25,6 +25,19 @@ RUN apt-get update && \
     apt-get install -y lsb-release wget software-properties-common gnupg && \
     bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 
+# Remove any system HDF5 installations to prevent CMake from finding them
+RUN apt-get remove -y libhdf5-* hdf5-* || true && \
+    apt-get autoremove -y && \
+    rm -rf /usr/lib/x86_64-linux-gnu/libhdf5* \
+           /usr/lib/x86_64-linux-gnu/hdf5 \
+           /usr/lib/aarch64-linux-gnu/libhdf5* \
+           /usr/lib/aarch64-linux-gnu/hdf5 \
+           /usr/lib/libhdf5* \
+           /usr/include/hdf5* \
+           /usr/share/hdf5* \
+           /usr/local/lib/libhdf5* \
+           /usr/local/include/hdf5* || true
+
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
