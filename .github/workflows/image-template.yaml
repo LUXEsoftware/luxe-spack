@@ -1,14 +1,11 @@
-name: Publish LUXE software image
+name: Publish Docker Image
 description: |
-  Loads a LUXE-release stack from spack cache.
-  This workflow builds the image and pushes it to the registry.
+  Loads a LUXE stack from spack cache.
+  This workflow builds a multi-arch image and pushes it to the registry.
 
 on:
   workflow_call:
     inputs:
-      os:
-        required: true
-        type: string
       registry:
         required: true
         type: string
@@ -20,27 +17,26 @@ permissions:
   attestations: write
 
 jobs:
-  build:
+  build-linux-amd64:
+    uses: ./.github/workflows/docker-build-push-template.yaml
+    with:
+      runner: ubuntu-latest
+      platform: amd64
+      registry: ${{ inputs.registry }}
+  
+  build-linux-arm64:
+    uses: ./.github/workflows/docker-build-push-template.yaml
+    with:
+      runner: ubuntu-24.04-arm
+      platform: arm64
+      registry: ${{ inputs.registry }}
+
+  publish-multiarch:
+    needs:
+      - build-linux-amd64
+      - build-linux-arm64
     runs-on: ubuntu-latest
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: endersonmenezes/free-disk-space@v2
-        with:
-          remove_android: true
-          remove_dotnet: true
-          remove_haskell: true
-          remove_tool_cache: true
-          remove_swap: true
-          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
-          remove_packages_one_command: true
-          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
-          testing: false
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -51,23 +47,24 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          #images: ${{ inputs.registry }}/${{ github.repository_owner }}/luxe-sw-${{ inputs.os }}
           images: ${{ inputs.registry }}/${{ github.repository_owner }}/luxe-sw
-          flavor: latest=true
-      - name: Build and Push
-        id: docker_build
-        uses: docker/build-push-action@v6
+          flavor: latest=${{ github.ref == 'refs/heads/main' }}
+      - name: Change string case for amd64
+        id: lowercase-amd64
+        uses: Entepotenz/change-string-case-action-min-dependencies@v1
         with:
-          push: true
-          context: ./Docker
-          file: ./Docker/Dockerfile
-          build-args: |
-            OS=${{ inputs.os }}
-            GITHUB_REPOSITORY=${{ github.repository }}
-            LUXE_SHA=${{ github.sha }}
-            SPACK_BUILDCACHE=oci://ghcr.io/${{ github.repository_owner }}/luxe-buildcache
-            OCI_USERNAME=${{ github.actor }}
-          secrets: |
-            "ocipass=${{ secrets.GITHUB_TOKEN }}"
+          string: ${{ needs.build-linux-amd64.outputs.image-uri }}
+      - name: Change string case for arm64
+        id: lowercase-arm64
+        uses: Entepotenz/change-string-case-action-min-dependencies@v1
+        with:
+          string: ${{ needs.build-linux-arm64.outputs.image-uri }}
+      - name: Create manifest
+        id: build
+        uses: int128/docker-manifest-create-action@v2
+        with:
+          index-annotations: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          sources: |
+            ${{ steps.lowercase-amd64.outputs.lowercase }}
+            ${{ steps.lowercase-arm64.outputs.lowercase }}
