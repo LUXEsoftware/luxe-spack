@@ -1,10 +1,7 @@
 from datetime import datetime
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from spack.package import *
-from spack.pkg.k4.key4hep_stack import *
+from spack.pkg.k4.key4hep_stack import Key4hepPackage, install_setup_script
+from common import *
 
 class LuxeStack(BundlePackage, Key4hepPackage):
     """Bundle package to install LUXE Software Stack"""
@@ -17,11 +14,6 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     #######################################################
     ###  nightly build
     version(datetime.today().strftime('%Y-%m-%d'))
-
-    version("main", branch="main")
-
-    ### stable build
-    #version('0.1')
 
     # this bundle package installs a custom setup script,
     # so need to add the install phase
