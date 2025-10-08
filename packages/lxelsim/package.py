@@ -15,6 +15,7 @@ class Lxelsim(CMakePackage, Key4hepPackage):
     depends_on('geant4')
     depends_on('doxygen')
     depends_on('glib')
+    depends_on('hdf5')
 
     def cmake_args(self):
         args = []  

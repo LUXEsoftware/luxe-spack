@@ -21,6 +21,11 @@ RUN . /opt/setup_spack.sh && \
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
+# Install llvm and other dependencies
+RUN apt update && \
+    apt install lsb-release wget software-properties-common gnupg && \
+    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
@@ -51,7 +56,7 @@ RUN . /opt/setup_spack.sh && \
 
 # Concretizing the LUXE stack reusing system packages as external
 RUN . ${HOME}/setup_env.sh && \
-    spack external find --not-buildable rust && \
+    spack external find --not-buildable && \
     spack concretize --reuse
 
 # Installing fragments of dependency tree in separate layers for cached debugging
