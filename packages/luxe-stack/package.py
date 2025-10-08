@@ -64,16 +64,16 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     with when('+pytools'):
         # Python tools
         depends_on('py-h5py')
-        depends_on('py-ipython')
+        #depends_on('py-ipython')
         # depends_on('py-jupytext') # this requires rust and node-js which take too long to compile
         depends_on('py-matplotlib')
-        depends_on('py-pandas')
+        #depends_on('py-pandas')
         depends_on('py-particle')
         depends_on('py-pip')
-        depends_on('py-scikit-learn')
+        #depends_on('py-scikit-learn')
         depends_on('py-scipy')
-        depends_on('py-uproot')
-        depends_on('py-xgboost')
+        #depends_on('py-uproot')
+        #depends_on('py-xgboost')
 
 
     def setup_run_environment(self, env):
