@@ -4,7 +4,6 @@
 ###############################################################################
 
 ARG OS=alma9
-# mucoll tag is only available recent tag
 FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-10-07
 
 ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
@@ -22,8 +21,8 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
 # Install llvm and other dependencies
-RUN apt update && \
-    apt install lsb-release wget software-properties-common gnupg && \
+RUN apt-get update && \
+    apt-get install -y lsb-release wget software-properties-common gnupg && \
     bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 
 # Apply our patches to spack
