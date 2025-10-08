@@ -1,13 +1,66 @@
 # Very loose requirements for nightly builds
 packages:
-  geant4:
-    variants: ~qt+opengl+vecgeom cxxstd=20
-  root:
-    variants: +davix+fftw+gsl+math+minuit+mlp+opengl~postgres~pythia6+pythia8+python+r+root7+roofit+rpath~shadow+sqlite+ssl+tbb+threads+tmva+unuran+vc+vdt+x+xml+xrootd cxxstd=17 build_type=RelWithDebInfo
   all:
-    target: [x86_64]
+    target: [x86_64, aarch64]
     variants: build_type=Release cxxstd=20
     buildable: true
-    providers:
-      gl: [mesa]
-      glu: [mesa]
+
+  # Use the system OpenGL as recommended by spack
+  # See https://github.com/key4hep/key4hep-spack/issues/318 and
+  # https://github.com/key4hep/key4hep-spack/issues/516
+  # A version is needed and we set it to 99 so that spack thinks it's the latest
+  # (it may not work if the versions in the current system are not what's required
+  # but that hasn't happened yet)
+  opengl:
+    buildable: False
+    externals:
+    - spec: opengl@99
+      prefix: /usr
+  openglu:
+    buildable: False
+    externals:
+    - spec: openglu@99
+      prefix: /usr
+  mesa:
+    buildable: False
+    externals:
+    - spec: mesa@99
+      prefix: /usr
+  mesa-glu:
+    buildable: False
+    externals:
+    - spec: mesa-glu@99
+      prefix: /usr
+  # Use the system kerberos, otherwise the tickets obtained at login with the
+  # system version don't appear for the spack kerberos (happening on lxplus at least)
+  krb5:
+    buildable: False
+    externals:
+    - spec: krb5@99
+      prefix: /usr
+  # Use the system ssh, otherwise the configuration for the provided ssh will likely be
+  # different and things like ssh using kerberos won't work (by extension authentication
+  # for git with ssh with kerberos)
+  openssh:
+    buildable: False
+    externals:
+    - spec: openssh@99
+      prefix: /usr
+
+  python:
+    require: '@3.12'
+
+  dd4hep:
+    require: +edm4hep
+
+  py-xsuite:
+    require: '@0.36.7'
+
+  py-poetry:
+    require: '@1.8.5'
+
+  ptarmigan:
+    require: '@1.4.2'
+
+  lxelsim:
+    require: '@master'

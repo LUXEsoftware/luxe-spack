@@ -1,85 +1,10 @@
 spack:
-
   packages:
-
-    rust:
-      externals:
-      - spec: rust@1.89.0
-        prefix: /root/.cargo
-        extra_attributes:
-          cargo: /root/.cargo/bin/cargo
-          compilers:
-            rust: /root/.cargo/bin/rustc
-      buildable: false
-    luxe-stack:
-      require: '@main'
-
-    python:
-      require: '@3.12'
-
-    dd4hep:
-      require: +edm4hep
-
-    py-xsuite:
-      require: '@0.36.7'
-
-    py-poetry:
-      require: '@1.8.5'
-
-    ptarmigan:
-      require: '@1.4.2'
-
-    lxsim:
-      require: '@bsm_npod_calice_ecal_g4v11'
-
-    #luxegeo:
-    #  require: '@main'
-
-    # Use the system OpenGL as recommended by spack
-    # See https://github.com/key4hep/key4hep-spack/issues/318 and
-    # https://github.com/key4hep/key4hep-spack/issues/516
-    # A version is needed and we set it to 99 so that spack thinks it's the latest
-    # (it may not work if the versions in the current system are not what's required
-    # but that hasn't happened yet)
-    opengl:
-      buildable: false
-      externals:
-      - spec: opengl@99
-        prefix: /usr
-    openglu:
-      buildable: false
-      externals:
-      - spec: openglu@99
-        prefix: /usr
-    mesa:
-      buildable: false
-      externals:
-      - spec: mesa@99
-        prefix: /usr
-    mesa-glu:
-      buildable: false
-      externals:
-      - spec: mesa-glu@99
-        prefix: /usr
-    # Use the system kerberos, otherwise the tickets obtained at login with the
-    # system version don't appear for the spack kerberos (happening on lxplus at least)
-    krb5:
-      buildable: false
-      externals:
-      - spec: krb5@99
-        prefix: /usr
-    # Use the system ssh, otherwise the configuration for the provided ssh will likely be
-    # different and things like ssh using kerberos won't work (by extension authentication
-    # for git with ssh with kerberos)
-    openssh:
-      buildable: false
-      externals:
-      - spec: openssh@99
-        prefix: /usr
-
     all:
-      target: []
-      variants: build_type=RelWithDebInfo cxxstd=20
+      target: [x86_64, aarch64]
+      variants: 
+        - build_type=RelWithDebInfo
+        - 'cxxstd=20'
       buildable: true
       providers:
         gl: [mesa]
@@ -87,6 +12,8 @@ spack:
 
   concretizer:
     unify: true
+    targets:
+      host_compatible: true
 
   view: false
 
@@ -94,4 +21,4 @@ spack:
   - ../luxe-common/packages.yaml
 
   specs:
-  - luxe-stack
+  - luxe-stack+devtools+pytools
