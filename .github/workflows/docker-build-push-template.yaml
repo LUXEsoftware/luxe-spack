@@ -71,7 +71,7 @@ jobs:
           file: ./Docker/Dockerfile
           build-args: |
             GITHUB_REPOSITORY=${{ github.repository }}
-            luxe-sw_SHA=${{ github.sha }}
+            LUXE_SHA=${{ github.sha }}
             SPACK_BUILDCACHE=oci://ghcr.io/${{ github.repository_owner }}/luxe-sw-buildcache
             OCI_USERNAME=${{ github.actor }}
             BRANCH=${{ github.ref_name }}
