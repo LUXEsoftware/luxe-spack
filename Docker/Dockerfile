@@ -3,7 +3,7 @@
 #  Tag:        ${VERSION}-alma9
 ###############################################################################
 
-ARG OS=alma9
+ARG OS=ubuntu24
 FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-10-07
 
 ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
