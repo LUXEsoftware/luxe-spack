@@ -42,7 +42,7 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on('ptarmigan')
     depends_on('py-xsuite')
     
-    depends_on('lxelsim')
+    #depends_on('lxelsim')
 
     ##################### developer tools #################
     #######################################################
