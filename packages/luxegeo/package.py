@@ -11,7 +11,8 @@ class Luxegeo(CMakePackage):
     version("main", branch="main")
 
     depends_on("cxx", type="build")
-
+    depends_on("c", type="build")
+    
     depends_on("lcio")
     depends_on("dd4hep")
     depends_on("root")
