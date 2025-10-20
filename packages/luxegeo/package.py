@@ -21,7 +21,9 @@ class Luxegeo(CMakePackage):
 
     def cmake_args(self):
         args = []  
-        args.append(self.define_from_variant('CMAKE_CXX_STANDARD', 'cxxstd'))
+        args.append(
+            f"-DCMAKE_CXX_STANDARD={self.spec['root'].variants['cxxstd'].value}"
+        )
         return args
     
     def setup_run_environment(self, env):
