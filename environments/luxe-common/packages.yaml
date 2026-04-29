@@ -64,3 +64,9 @@ packages:
 
   lxelsim:
     require: '@master'
+
+  acts:
+    require: '@main+dd4hep+json+gnn cxxstd=20'
+
+  k4actstracking:
+    require: '@main'
