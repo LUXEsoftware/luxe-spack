@@ -66,7 +66,7 @@ packages:
     require: '@master'
 
   acts:
-    require: '@main+dd4hep+json+gnn cxxstd=20'
+    require: '@main+dd4hep+json cxxstd=20'
 
   k4actstracking:
     require: '@main'
