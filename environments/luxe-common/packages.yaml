@@ -60,13 +60,10 @@ packages:
     require: '@1.8.5'
 
   ptarmigan:
-    require: '@1.4.2'
+    require: '@1.4.2+hdf5'
 
   lxelsim:
     require: '@master'
 
   acts:
     require: '@main+dd4hep+json cxxstd=20'
-
-  k4actstracking:
-    require: '@main'
