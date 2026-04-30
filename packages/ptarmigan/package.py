@@ -1,4 +1,3 @@
-from spack_repo.builtin.build_systems.cargo import CargoPackage
 from spack.package import *
 
 
