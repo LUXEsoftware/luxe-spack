@@ -26,6 +26,7 @@ class Ptarmigan(CargoPackage):
     # Upstream documents MPI builds as requiring Clang.
     requires("%clang", when="+mpi", msg="Ptarmigan +mpi requires the Clang compiler")
 
+    @property
     def build_args(self):
         args = []
         features = []
