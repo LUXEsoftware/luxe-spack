@@ -37,6 +37,8 @@ class Ptarmigan(CargoPackage):
             features.append("hdf5-output")
 
         if features:
-            args.extend(["--release --features", ",".join(features)])
+            args.extend(["--release", "--features", ",".join(features)])
+        else:
+            args.append("--release")
 
         return args
