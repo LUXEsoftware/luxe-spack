@@ -4,7 +4,7 @@
 ###############################################################################
 
 ARG OS=ubuntu24
-FROM ghcr.io/key4hep/key4hep-externals-${OS}:2025-10-07
+FROM ghcr.io/key4hep/key4hep-externals-${OS}:2026-04-23
 
 ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
 ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
