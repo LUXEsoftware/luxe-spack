@@ -21,9 +21,9 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
 # Install llvm and other dependencies
-RUN apt-get update && \
-    apt-get install -y lsb-release wget software-properties-common gnupg && \
-    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+#RUN apt-get update && \
+#    apt-get install -y lsb-release wget software-properties-common gnupg && \
+#    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
