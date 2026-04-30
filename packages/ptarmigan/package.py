@@ -21,8 +21,8 @@ class Ptarmigan(CargoPackage):
     variant("mpi", default=False, description="Enable MPI support")
     variant("hdf5", default=False, description="Enable HDF5 output support")
 
-    depends_on("mpi", when="+mpi")
-    depends_on("hdf5", when="+hdf5")
+    depends_on("mpi", when="+mpi", type="build")
+    depends_on("hdf5", when="+hdf5", type="build")
 
     # Upstream documents MPI builds as requiring Clang.
     requires("%clang", when="+mpi", msg="Ptarmigan +mpi requires the Clang compiler")
@@ -38,6 +38,6 @@ class Ptarmigan(CargoPackage):
             features.append("hdf5-output")
 
         if features:
-            args.extend(["--features", ",".join(features)])
+            args.extend(["--release --features", ",".join(features)])
 
         return args

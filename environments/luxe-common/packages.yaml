@@ -64,6 +64,3 @@ packages:
 
   lxelsim:
     require: '@master'
-
-  acts:
-    require: '@main+dd4hep+json cxxstd=20'
