@@ -22,6 +22,7 @@ class Ptarmigan(CargoPackage):
 
     depends_on("mpi", when="+mpi", type="build")
     depends_on("hdf5", when="+hdf5", type="build")
+    depends_on("hdf5+mpi", when="+mpi+hdf5", type="build")
 
     # Upstream documents MPI builds as requiring Clang.
     requires("%clang", when="+mpi", msg="Ptarmigan +mpi requires the Clang compiler")
