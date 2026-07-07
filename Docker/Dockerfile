@@ -1,13 +1,8 @@
 ###############################################################################
 #  Repository: ${IMAGE}/luxe-sw
-#  Tag:        ${VERSION}-alma9
 ###############################################################################
 
-ARG OS=ubuntu24
-FROM ghcr.io/key4hep/key4hep-externals-${OS}:2026-04-23
-
-ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
-ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
+FROM ubuntu:24.04
 
 # --------------------------------------------------------------------------- #
 #  System packages 
@@ -31,6 +26,63 @@ RUN apt update -y && apt upgrade -y && \
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
+# --------------------------------------------------------------------------- #
+#  Bootstrap spack + spack-packages.
+#  Pins are supplied at build time by CI, resolved from the key4hep-spack repo:
+#    SPACK_COMMIT          <- key4hep-spack/.latest-commit
+#    SPACK_PACKAGES_COMMIT <- key4hep-spack/.latest-packages-commit
+#    KEY4HEP_SPACK_SHA     <- key4hep-spack main HEAD (the SHA the pins were read from)
+# --------------------------------------------------------------------------- #
+ENV SPACK_COLOR="always"
+ARG SPACK_COMMIT
+ARG SPACK_PACKAGES_COMMIT
+
+# Setting up Spack
+RUN git clone https://github.com/spack/spack.git /opt/spack && \
+    echo "export SPACK_ROOT=/opt/spack" >> /opt/setup_spack.sh && \
+    echo ". /opt/spack/share/spack/setup-env.sh" >> /opt/setup_spack.sh && \
+    echo "alias setup_spack=\". /opt/setup_spack.sh\"" >> /etc/profile.d/aliases.sh && \
+    if [ -n "${SPACK_COMMIT}" ]; then cd /opt/spack && git checkout ${SPACK_COMMIT}; fi
+
+# Checkout spack packages and register them as the builtin repo
+RUN . /opt/setup_spack.sh && \
+    git clone https://github.com/spack/spack-packages /opt/spack-packages && \
+    cd /opt/spack-packages && \
+    if [ -n "${SPACK_PACKAGES_COMMIT}" ]; then git checkout ${SPACK_PACKAGES_COMMIT}; fi && \
+    spack repo set --destination "/opt/spack-packages" builtin
+
+# Configure spack: padded install paths (buildcache relocation) and system compilers
+RUN . /opt/setup_spack.sh && \
+    spack config add 'config:install_tree:padded_length:128' && \
+    spack compiler find
+
+# --------------------------------------------------------------------------- #
+#  Add the key4hep-spack repository (the `k4` namespace luxe-stack imports
+#  from, and where most externals / key4hep packages are defined). 
+# --------------------------------------------------------------------------- #
+ARG KEY4HEP_SPACK_REPO=key4hep/key4hep-spack
+ARG KEY4HEP_SPACK_SHA
+RUN . /opt/setup_spack.sh && \
+    REPOPATH=${SPACK_ROOT}/var/key4hep-spack && \
+    git clone https://github.com/${KEY4HEP_SPACK_REPO} ${REPOPATH} && \
+    cd ${REPOPATH} && \
+    if [ -n "${KEY4HEP_SPACK_SHA}" ]; then git checkout ${KEY4HEP_SPACK_SHA}; fi
+
+# Apply key4hep's patches to spack packages, then register the repo
+RUN . /opt/setup_spack.sh && \
+    REPOPATH=${SPACK_ROOT}/var/key4hep-spack && \
+    cd /opt/spack-packages && \
+    . ${REPOPATH}/.cherry-pick
+
+RUN . /opt/setup_spack.sh && \
+    spack repo add ${SPACK_ROOT}/var/key4hep-spack
+
+# --------------------------------------------------------------------------- #
+#  LUXE-specific bootstrap 
+# --------------------------------------------------------------------------- #
+ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
+ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
+
 # Adding repository: LUXE
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
@@ -38,10 +90,10 @@ RUN . /opt/setup_spack.sh && \
     cd ${REPOPATH} && \
     git checkout ${LUXE_SHA}
 
-# Apply our patches to spack
+# Apply our patches to spack (after key4hep's: overrides py-numba/py-llvmlite for LLVM 20)
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
-    cd /opt/spack && \
+    cd /opt/spack-packages && \
     . ${REPOPATH}/.cherry-pick
 
 # Add the package repositories
