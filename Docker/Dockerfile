@@ -51,10 +51,13 @@ RUN . /opt/setup_spack.sh && \
     if [ -n "${SPACK_PACKAGES_COMMIT}" ]; then git checkout ${SPACK_PACKAGES_COMMIT}; fi && \
     spack repo set --destination "/opt/spack-packages" builtin
 
-# Configure spack: padded install paths (buildcache relocation) and system compilers
+# Configure spack: padded install paths (buildcache relocation) and system compilers.
+# Register both gcc (build-essential) and the pre-compiled LLVM 20 clang so both
+# are known to spack before any environment is concretized.
 RUN . /opt/setup_spack.sh && \
     spack config add 'config:install_tree:padded_length:128' && \
-    spack compiler find
+    spack compiler find && \
+    spack compiler find /usr/lib/llvm-20/bin
 
 # --------------------------------------------------------------------------- #
 #  Add the key4hep-spack repository (the `k4` namespace luxe-stack imports
@@ -116,11 +119,11 @@ RUN . /opt/setup_spack.sh && \
     echo "cd -" >> ${HOME}/setup_env.sh && \
     echo "spack env status" >> ${HOME}/setup_env.sh
 
-# Concretizing the LUXE stack reusing system rust as external
+# Concretizing the LUXE stack reusing system rust as external.
+# clang was already registered with spack in the compiler-config layer above.
 RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
     export PATH=/usr/lib/llvm-20/bin:${PATH} && \
-    spack compiler find /usr/lib/llvm-20/bin && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack concretize --reuse
 
