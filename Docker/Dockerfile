@@ -116,10 +116,12 @@ RUN . /opt/setup_spack.sh && \
     echo "cd -" >> ${HOME}/setup_env.sh && \
     echo "spack env status" >> ${HOME}/setup_env.sh
 
-# Concretizing the LUXE stack reusing system packages as external
+# Concretizing the LUXE stack reusing system rust as external
 RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
-    OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find --not-buildable && \
+    export PATH=/usr/lib/llvm-20/bin:${PATH} && \
+    spack compiler find /usr/lib/llvm-20/bin && \
+    OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack concretize --reuse
 
 # Installing fragments of dependency tree in separate layers for cached debugging
