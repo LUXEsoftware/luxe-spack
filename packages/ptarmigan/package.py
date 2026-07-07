@@ -24,6 +24,13 @@ class Ptarmigan(CargoPackage):
     depends_on("hdf5", when="+hdf5", type="build")
     depends_on("hdf5+mpi", when="+mpi+hdf5", type="build")
 
+    # Building the MPI Rust bindings (the `mpi-sys`/`cc` crates compile a C shim,
+    # `bindgen` needs libclang) pulls in a C compiler. As a CargoPackage, ptarmigan
+    # otherwise declares no language dependency, so there would be no compiler node
+    # for the `%clang` requirement below to bind to and concretization would fail
+    # with "requires the Clang compiler" even when clang is registered with spack.
+    depends_on("c", type="build", when="+mpi")
+
     # Upstream documents MPI builds as requiring Clang.
     requires("%clang", when="+mpi", msg="Ptarmigan +mpi requires the Clang compiler")
 
