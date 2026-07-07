@@ -31,6 +31,13 @@ RUN apt update -y && apt upgrade -y && \
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
+# Configure spack: padded install paths (buildcache relocation) and system compilers.
+# Register both gcc (build-essential) and the pre-compiled LLVM 20 clang so both
+# are known to spack before any environment is concretized.
+RUN . /opt/setup_spack.sh && \
+    spack compiler find && \
+    spack compiler find /usr/lib/llvm-20/bin
+
 # Adding repository: LUXE
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
