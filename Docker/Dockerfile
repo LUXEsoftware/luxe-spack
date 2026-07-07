@@ -9,16 +9,34 @@ FROM ghcr.io/key4hep/key4hep-externals-${OS}:2026-04-23
 ARG LUXE_SHA=80aa392e12b7e553f7dbfb099adb7c0e67b80924
 ARG GITHUB_REPOSITORY=LUXEsoftware/luxe-spack
 
+# --------------------------------------------------------------------------- #
+#  System packages 
+# --------------------------------------------------------------------------- #
+RUN apt update && apt install -y wget && \
+    wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
+    echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-20 main" | tee /etc/apt/sources.list.d/llvm-20.list
+
+# Install pre-compiled LLVM binaries to avoid expensive source builds in CI.
+# libzstd-dev/zlib1g-dev are needed so LLVM's CMake exports (LLVMSupport ->
+# zstd::libzstd_shared, ZLIB::ZLIB) resolve when py-llvmlite links against LLVM.
+
+RUN apt update -y && apt upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt install -y \
+    build-essential git python3 unzip gfortran file curl wget pkg-config rsync tzdata libgl1-mesa-dev libglu1-mesa libglu1-mesa-dev libkrb5-dev \
+    llvm-20 clang-20 lld-20 libzstd-dev zlib1g-dev && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
+    echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
+
 # Adding repository: LUXE
 RUN . /opt/setup_spack.sh && \
     REPOPATH=${SPACK_ROOT}/var/luxe-spack && \
     git clone https://github.com/${GITHUB_REPOSITORY} ${REPOPATH} && \
     cd ${REPOPATH} && \
     git checkout ${LUXE_SHA}
-
-# Get Rust
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \
-    echo ". $HOME/.cargo/env" > ${HOME}/setup_env.sh
 
 # Apply our patches to spack
 RUN . /opt/setup_spack.sh && \
@@ -59,8 +77,9 @@ RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack install ${SPACK_INSTALL_OPTS} && \
     spack env deactivate && \
+    spack gc -y && \
     spack clean -a && \
-    spack mirror remove local-buildcache || true
+    { spack mirror remove local-buildcache || true; }
 
 RUN . ${HOME}/setup_env.sh && \
     LUXE_STACK_PATH=$(spack find --format "{prefix}" luxe-stack) && \
