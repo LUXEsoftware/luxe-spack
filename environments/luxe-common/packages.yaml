@@ -48,8 +48,8 @@ packages:
       prefix: /usr
 
   # Take external llvm as it won't compile within 6 hours limit
-  # llvm@20 (not a newer major) because py-llvmlite (via py-numba, pulled in by
-  # acorn) caps at llvm@20; the rest of the stack has no hard llvm version need.
+  # llvm@20 (not a newer major) because py-llvmlite (via py-numba) 
+  # caps at llvm@20; the rest of the stack has no hard llvm version need.
   #
   # extra_attributes:compilers is REQUIRED: ptarmigan+mpi forces %clang, which
   # under unify:true makes clang the compiler for the whole stack. Without the

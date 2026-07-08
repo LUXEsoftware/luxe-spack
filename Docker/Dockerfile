@@ -12,13 +12,20 @@ RUN apt update && apt install -y wget && \
     echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-20 main" | tee /etc/apt/sources.list.d/llvm-20.list
 
 # Install pre-compiled LLVM binaries to avoid expensive source builds in CI.
-# libzstd-dev/zlib1g-dev are needed so LLVM's CMake exports (LLVMSupport ->
+# llvm-20-dev is REQUIRED (not just the llvm-20 runtime/tools package):
+# py-llvmlite's FFI does `find_package(LLVM REQUIRED CONFIG)` and links
+# statically against LLVM, so it needs the LLVM CMake exports
+# (/usr/lib/llvm-20/lib/cmake/llvm/LLVMConfig.cmake), the headers
+# (/usr/lib/llvm-20/include) and the static archives (libLLVM*.a) - all of
+# which ship in llvm-20-dev, not in llvm-20. Without it, find_package fails
+# immediately and py-llvmlite (-> py-numba -> py-pandas -> py-xsuite) crashes.
+# libzstd-dev/zlib1g-dev are also needed so LLVM's CMake exports (LLVMSupport ->
 # zstd::libzstd_shared, ZLIB::ZLIB) resolve when py-llvmlite links against LLVM.
 
 RUN apt update -y && apt upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
     build-essential git python3 unzip gfortran file curl wget pkg-config rsync tzdata libgl1-mesa-dev libglu1-mesa libglu1-mesa-dev libkrb5-dev \
-    llvm-20 clang-20 lld-20 libzstd-dev zlib1g-dev && \
+    llvm-20 llvm-20-dev clang-20 lld-20 libzstd-dev zlib1g-dev && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -54,9 +61,6 @@ RUN . /opt/setup_spack.sh && \
 # Configure spack: padded install paths (buildcache relocation) and system compilers.
 # Register gcc/gfortran (build-essential). clang is NOT registered here on purpose:
 # the LLVM 20 clang compiler is declared authoritatively (with its compiler paths)
-# as the `llvm` external in environments/luxe-common/packages.yaml, so a second,
-# competing `spack compiler find /usr/lib/llvm-20/bin` entry is redundant and only
-# reintroduces the scope ambiguity that broke the amd64 build.
 RUN . /opt/setup_spack.sh && \
     spack config add 'config:install_tree:padded_length:128' && \
     spack compiler find
@@ -122,8 +126,6 @@ RUN . /opt/setup_spack.sh && \
     echo "spack env status" >> ${HOME}/setup_env.sh
 
 # Concretizing the LUXE stack reusing system rust as external.
-# clang comes from the `llvm` external declared in luxe-common/packages.yaml
-# (with its compiler paths), so no separate compiler registration is needed here.
 RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \

@@ -19,12 +19,27 @@ class Dmg4(CMakePackage):
 
     depends_on("cxx", type="build")
 
+    # Match the C++ standard used to build Geant4. The DMG4 CMakeLists sets no
+    # standard on the default build path (it only inherits flags from
+    # Geant4_USE_FILE), so we pin it explicitly to keep the ABI consistent with
+    # the Geant4 (and GSL) it links against.
+    _cxxstd_values = ("11", "14", "17", "20")
+    variant(
+        "cxxstd",
+        default="17",
+        values=_cxxstd_values,
+        multi=False,
+        description="Use the specified C++ standard when building.",
+    )
+
     depends_on("geant4")
     depends_on("gsl")
 
+    # Force Geant4 to the same C++ standard as DMG4.
+    for _std in _cxxstd_values:
+        depends_on(f"geant4 cxxstd={_std}", when=f"cxxstd={_std}")
+
     def cmake_args(self):
-        # FIXME: Add arguments other than
-        # FIXME: CMAKE_INSTALL_PREFIX and CMAKE_BUILD_TYPE
-        # FIXME: If not needed delete this function
-        args = []
-        return args
+        return [
+            self.define_from_variant("CMAKE_CXX_STANDARD", "cxxstd"),
+        ]
