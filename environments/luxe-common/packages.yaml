@@ -50,11 +50,22 @@ packages:
   # Take external llvm as it won't compile within 6 hours limit
   # llvm@20 (not a newer major) because py-llvmlite (via py-numba, pulled in by
   # acorn) caps at llvm@20; the rest of the stack has no hard llvm version need.
+  #
+  # extra_attributes:compilers is REQUIRED: ptarmigan+mpi forces %clang, which
+  # under unify:true makes clang the compiler for the whole stack. Without the
+  # explicit compiler paths here, spack may bind %clang to this bare external and
+  # the compiler-wrapper has no clang binary to exec ("exec: None: not found" ->
+  # "C compiler cannot create executables"). Declaring them makes this external a
+  # complete, self-sufficient clang definition on every arch.
   llvm:
     buildable: False
     externals:
     - spec: llvm@20.1.8 +clang +lld
       prefix: /usr/lib/llvm-20
+      extra_attributes:
+        compilers:
+          c: /usr/lib/llvm-20/bin/clang
+          cxx: /usr/lib/llvm-20/bin/clang++
 
   python:
     require: '@3.12'

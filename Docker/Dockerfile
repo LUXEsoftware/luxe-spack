@@ -52,12 +52,14 @@ RUN . /opt/setup_spack.sh && \
     spack repo set --destination "/opt/spack-packages" builtin
 
 # Configure spack: padded install paths (buildcache relocation) and system compilers.
-# Register both gcc (build-essential) and the pre-compiled LLVM 20 clang so both
-# are known to spack before any environment is concretized.
+# Register gcc/gfortran (build-essential). clang is NOT registered here on purpose:
+# the LLVM 20 clang compiler is declared authoritatively (with its compiler paths)
+# as the `llvm` external in environments/luxe-common/packages.yaml, so a second,
+# competing `spack compiler find /usr/lib/llvm-20/bin` entry is redundant and only
+# reintroduces the scope ambiguity that broke the amd64 build.
 RUN . /opt/setup_spack.sh && \
     spack config add 'config:install_tree:padded_length:128' && \
-    spack compiler find && \
-    spack compiler find /usr/lib/llvm-20/bin
+    spack compiler find
 
 # --------------------------------------------------------------------------- #
 #  Add the key4hep-spack repository (the `k4` namespace luxe-stack imports
@@ -120,10 +122,10 @@ RUN . /opt/setup_spack.sh && \
     echo "spack env status" >> ${HOME}/setup_env.sh
 
 # Concretizing the LUXE stack reusing system rust as external.
-# clang was already registered with spack in the compiler-config layer above.
+# clang comes from the `llvm` external declared in luxe-common/packages.yaml
+# (with its compiler paths), so no separate compiler registration is needed here.
 RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
-    export PATH=/usr/lib/llvm-20/bin:${PATH} && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack concretize --reuse
 
