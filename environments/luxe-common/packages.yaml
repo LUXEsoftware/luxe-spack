@@ -67,6 +67,17 @@ packages:
           c: /usr/lib/llvm-20/bin/clang
           cxx: /usr/lib/llvm-20/bin/clang++
 
+  # The external llvm is built ~flang, so it provides NO Fortran compiler. With
+  # the stack on clang (ptarmigan+mpi forces it, unify:true propagates it), any
+  # Fortran package (openblas, ...) would otherwise get the llvm node as its
+  # fortran provider and the wrapper execs a non-existent flang
+  # ("clang/flang: exec: None: not found"). Route Fortran to gfortran (gcc)
+  # instead; C/C++ stay on clang. ptarmigan has no Fortran node, so this does
+  # not conflict with its %clang requirement. Mixing clang C/C++ with gfortran
+  # is a standard, ABI-compatible combination.
+  fortran:
+    require: ["gcc"]
+
   python:
     require: '@3.12'
 
