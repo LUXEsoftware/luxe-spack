@@ -74,6 +74,7 @@ RUN . /opt/setup_spack.sh && \
 # Concretizing the LUXE stack reusing system packages as external
 RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
+    export PATH=/usr/lib/llvm-20/bin:${PATH} && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack concretize --reuse
 
