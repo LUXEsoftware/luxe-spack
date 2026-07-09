@@ -21,11 +21,15 @@ RUN apt update && apt install -y wget && \
 # immediately and py-llvmlite (-> py-numba -> py-pandas -> py-xsuite) crashes.
 # libzstd-dev/zlib1g-dev are also needed so LLVM's CMake exports (LLVMSupport ->
 # zstd::libzstd_shared, ZLIB::ZLIB) resolve when py-llvmlite links against LLVM.
+# libomp-20-dev provides clang's OpenMP header + runtime (omp.h, libomp.so in the
+# clang resource dir). The all-clang stack compiles OpenMP extensions with
+# `clang -fopenmp` (e.g. py-numba's numba.np.ufunc.omppool); without it the build
+# fails with "'omp.h' file not found".
 
 RUN apt update -y && apt upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
     build-essential git python3 unzip gfortran file curl wget pkg-config rsync tzdata libgl1-mesa-dev libglu1-mesa libglu1-mesa-dev libkrb5-dev \
-    llvm-20 llvm-20-dev clang-20 lld-20 libzstd-dev zlib1g-dev && \
+    llvm-20 llvm-20-dev clang-20 lld-20 libomp-20-dev libzstd-dev zlib1g-dev && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
