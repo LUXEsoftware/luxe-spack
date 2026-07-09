@@ -84,6 +84,30 @@ packages:
   dd4hep:
     require: +edm4hep
 
+  # aarch64-only: fix a broken Boost build that silently produces an install
+  # containing only the top-level CMake config (no headers, no libraries, no
+  # per-component config files), which makes dd4hep fail its find_package(Boost)
+  # with 'Could not find boost_headers-config.cmake'.
+  #
+  # Root cause: Boost is built with its bundled B2, whose clang toolset
+  # (tools/build/src/tools/clang.jam, init-flags-cross) hardcodes the target
+  # triple as '<arch>-pc-linux', i.e. 'arm64-pc-linux' on aarch64. clang cannot
+  # locate the GCC toolchain (crtbeginS.o, libstdc++) for that triple on
+  # Ubuntu's multiarch layout - only the exact 'aarch64-linux-gnu' triple
+  # resolves. Every B2 link-based configuration check then fails, so
+  # zlib/bzip2/lzma/zstd are detected as absent, the only requested library
+  # (iostreams) builds nothing, and B2's 'install' meta-target collapses to
+  # just the CMake config files. x86_64 is unaffected because clang does
+  # resolve the analogous 'x86_64-pc-linux' triple.
+  #
+  # Force the correct triple via --target (clang honours the last --target on
+  # the command line, so the spack wrapper's flags override B2's). Scoped to
+  # aarch64 so x86_64 keeps its native triple and does not cross-compile.
+  boost:
+    require:
+    - spec: 'cflags="--target=aarch64-linux-gnu" cxxflags="--target=aarch64-linux-gnu" ldflags="--target=aarch64-linux-gnu"'
+      when: 'target=aarch64'
+
   py-xsuite:
     require: '@0.36.7'
 
