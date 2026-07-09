@@ -34,9 +34,28 @@ class Ptarmigan(CargoPackage):
     # Upstream documents MPI builds as requiring Clang.
     requires("%clang", when="+mpi", msg="Ptarmigan +mpi requires the Clang compiler")
 
+    def setup_build_environment(self, env):
+        # super() reaches CargoBuilder.setup_build_environment (sets CARGO_HOME);
+        # must be kept or the cargo build breaks.
+        super().setup_build_environment(env)
+        # The hdf5-output feature pulls the `hdf5-sys` crate, whose build script
+        # locates HDF5 via the HDF5_DIR env var (falling back to pkg-config /
+        # system paths). Point it explicitly at the hdf5 spack dependency so it
+        # uses our +mpi HDF5 instead of failing to find one ("panicked at
+        # hdf5-sys .../build.rs"). bindgen (via mpi-sys) also needs libclang; the
+        # llvm dependency provides it and clang is on PATH.
+        if self.spec.satisfies("+hdf5"):
+            env.set("HDF5_DIR", self.spec["hdf5"].prefix)
+
     @property
     def build_args(self):
-        args = []
+        # --locked: build against the committed Cargo.lock (vergen 4.0.3 + git2
+        # 0.18.2). `cargo install` ignores Cargo.lock by default and re-resolves,
+        # which bumps vergen to 4.2.0 and git2 to 0.21.0 -- and vergen 4.2.0 does
+        # not compile against git2 0.21.0 ("could not compile `vergen`", E0308).
+        # Pinning to the lockfile keeps the known-good crate versions. This is
+        # independent of the C compiler (it fails the same way with gcc or clang).
+        args = ["--locked"]
         features = []
 
         if "+mpi" in self.spec:
