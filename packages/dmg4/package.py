@@ -17,6 +17,11 @@ class Dmg4(CMakePackage):
     version("2.0", sha256="1f866960edb942a9c03c4f0c1a0f18257ab1770acd63e87a2ae90cbb678ef7d2")
     version("1.2", sha256="a16a2ec543692d0b8c16f9d1384a76119cf00ccc7089aedba96302b85d0959cd")
 
+    # DMG4's CMakeLists calls project() without a LANGUAGES clause, so CMake
+    # enables C in addition to CXX and probes the C compiler. Under Spack's
+    # compiler-as-dependency model that probe fails ("SPACK_CC_* variables not
+    # set") unless a C compiler is in the spec, so depend on both.
+    depends_on("c", type="build")
     depends_on("cxx", type="build")
 
     # Match the C++ standard used to build Geant4. The DMG4 CMakeLists sets no
