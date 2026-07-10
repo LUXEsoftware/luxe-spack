@@ -127,3 +127,5 @@ packages:
     require: '@main'
   k4reco:
     require: '@main'
+  k4fwcore:
+    require: '@main'
