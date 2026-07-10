@@ -43,8 +43,10 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on('py-xsuite')
     
     depends_on('lxelsim')
-    depends_on('k4actstracking')
     depends_on('dmg4')
+
+    depends_on('k4reco')
+    depends_on('k4actstracking')
 
     ##################### developer tools #################
     #######################################################

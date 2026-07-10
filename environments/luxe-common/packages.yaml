@@ -125,3 +125,5 @@ packages:
 
   k4actstracking:
     require: '@main'
+  k4reco:
+    require: '@main'
