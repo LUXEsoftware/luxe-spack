@@ -129,3 +129,5 @@ packages:
     require: '@main'
   k4fwcore:
     require: '@main'
+  edm4hep:
+    require: '@main'
