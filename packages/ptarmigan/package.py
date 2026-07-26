@@ -20,7 +20,7 @@ class Ptarmigan(CargoPackage):
     variant("mpi", default=False, description="Enable MPI support")
     variant("hdf5", default=False, description="Enable HDF5 output support")
 
-    depends_on("mpi", when="+mpi", type="build")
+    depends_on("mpi", when="+mpi", type=('build', 'run'))
     depends_on("hdf5", when="+hdf5", type="build")
     depends_on("hdf5+mpi", when="+mpi+hdf5", type="build")
 

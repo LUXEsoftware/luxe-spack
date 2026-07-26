@@ -3,10 +3,21 @@ description: |
   Publish LUXE software stack docker image.
   This workflow relies on a spack cache.
 
-on: push
+
+on:
+  # Build/publish the image when changes land on main; run on pull requests (so
+  # the required checks report on PRs); allow manual runs via the "Run workflow"
+  # button. No push trigger on other branches -- use dispatch for those.
+  push:
+    branches: [main]
+  workflow_dispatch:
+  pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Key on the branch name so repeated PR pushes / manual runs for the same branch
+  # don't pile up -- the later-started run cancels the earlier one. For PRs
+  # github.head_ref is the source branch; otherwise we fall back to github.ref_name.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
