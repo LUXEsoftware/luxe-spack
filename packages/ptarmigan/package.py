@@ -11,6 +11,7 @@ class Ptarmigan(CargoPackage):
 
     license("Apache-2.0", checked_by="tgblackburn")
 
+    version("1.6.1", sha256="efc1a9f6e2de08ce02eb69900564309873ee42d1c430e93f8e34e2fe4dd13726")
     version("1.4.2", sha256="b873b99526a9699bd219091b7c2546968a987ae6b6523529cb0f9f81840cb5da")
     version("1.3.5", sha256="3ea818b8a3ffa547588a824d55c9859a1b4d552c436567b56cf404ca58af4c88")
     version("1.3.2", sha256="1ee8c5f093e8c7dd9d29845805974468a1c2c8c07fb8757e8a151271d7d679e5")
