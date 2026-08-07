@@ -115,7 +115,7 @@ packages:
     require: '@1.8.5'
 
   ptarmigan:
-    require: '@1.4.2+hdf5+mpi'
+    require: '@1.6.1+hdf5+mpi'
 
   lxelsim:
     require: '@master'
