@@ -44,6 +44,7 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     
     depends_on('lxelsim')
     depends_on('dmg4')
+    depends_on('bdsim')
 
     depends_on('k4reco')
     depends_on('k4actstracking')
