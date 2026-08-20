@@ -27,3 +27,4 @@ class PyXcoll(PythonPackage):
     depends_on('py-xpart')
     depends_on('py-xtrack')
     depends_on('py-poetry')
+    depends_on('bdsim', type=('build', 'run'))
