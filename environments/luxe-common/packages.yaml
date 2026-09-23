@@ -120,6 +120,10 @@ packages:
   lxelsim:
     require: '@master'
 
+  # The only tag (v1.2.9) predates the input refactor and yaml float fix on main.
+  py-pica:
+    require: '@main'
+
   acts:
     require: '@main+dd4hep+json cxxstd=20'
 

@@ -2,7 +2,10 @@
 #  Repository: ${IMAGE}/luxe-sw
 ###############################################################################
 
-FROM ubuntu:24.04
+# Everything up to (and including) `spack concretize` lives in this stage, so
+# the CI concretization check (.github/workflows/concretize-template.yaml) can
+# build `--target concretize` and exercise exactly this bootstrap.
+FROM ubuntu:24.04 AS concretize
 
 # --------------------------------------------------------------------------- #
 #  System packages 
@@ -118,13 +121,14 @@ RUN . /opt/setup_spack.sh && \
         spack mirror add --oci-username "${OCI_USERNAME}" --oci-password-variable OCI_PASSWORD --unsigned --autopush local-buildcache "${SPACK_BUILDCACHE}";\
     fi
 
-# Create the release environment
+# Create the environment (luxe-release by default; CI concretizes the others)
+ARG ENVIRONMENT=luxe-release
 RUN . /opt/setup_spack.sh && \
-    cd ${SPACK_ROOT}/var/luxe-spack/environments/luxe-release && \
+    cd ${SPACK_ROOT}/var/luxe-spack/environments/${ENVIRONMENT} && \
     spack env activate . && \
     cd - && \
     echo ". /opt/setup_spack.sh" >> ${HOME}/setup_env.sh && \
-    echo "cd ${SPACK_ROOT}/var/luxe-spack/environments/luxe-release" >> ${HOME}/setup_env.sh && \
+    echo "cd ${SPACK_ROOT}/var/luxe-spack/environments/${ENVIRONMENT}" >> ${HOME}/setup_env.sh && \
     echo "spack env activate ." >> ${HOME}/setup_env.sh && \
     echo "cd -" >> ${HOME}/setup_env.sh && \
     echo "spack env status" >> ${HOME}/setup_env.sh
@@ -134,6 +138,12 @@ RUN --mount=type=secret,id=ocipass \
     . ${HOME}/setup_env.sh && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack external find rust --not-buildable && \
     OCI_PASSWORD=$(cat /run/secrets/ocipass) spack concretize --reuse
+
+# --------------------------------------------------------------------------- #
+#  End of the `concretize` stage. The CI check stops here; everything below is
+#  only built for the published image.
+# --------------------------------------------------------------------------- #
+FROM concretize AS image
 
 # Installing fragments of dependency tree in separate layers for cached debugging
 ENV SPACK_INSTALL_OPTS="--only-concrete --no-add --fail-fast"

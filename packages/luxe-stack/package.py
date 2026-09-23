@@ -40,6 +40,7 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     depends_on('luxegeo')
 
     depends_on('ptarmigan')
+    depends_on('py-pica')
     depends_on('py-xsuite')
     
     depends_on('lxelsim')
