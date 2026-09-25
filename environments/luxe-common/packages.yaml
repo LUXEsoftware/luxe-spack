@@ -108,8 +108,14 @@ packages:
     - spec: 'cflags="--target=aarch64-linux-gnu" cxxflags="--target=aarch64-linux-gnu" ldflags="--target=aarch64-linux-gnu"'
       when: 'target=aarch64'
 
+  # xcoll's Geant4 hand-over (via BDSIM) needs xcoll >= 0.7, i.e. xsuite >= 0.37
+  # (0.36.7 pins xcoll 0.6.2, which has no Geant4 engine). +geant4 builds the
+  # xcoll <-> BDSIM interface module at install time; require it on py-xcoll too
+  # so it can't silently be concretized away.
   py-xsuite:
-    require: '@0.36.7'
+    require: '@0.62.2 +geant4'
+  py-xcoll:
+    require: '+geant4'
 
   py-poetry:
     require: '@1.8.5'
