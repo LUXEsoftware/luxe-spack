@@ -72,10 +72,9 @@ class PyXcoll(PythonPackage):
         depends_on("py-pybind11", type=("build", "link"))
         # g4interface links libbdsim/libgmad/librebdsim; xcoll also runs
         # `bdsim --version` and looks up `bdsim` and `geant4-config` on PATH
-        # before it agrees to start the engine.
-        # BDSLinkBunch and AddLinkCollimatorTipJaw are 1.7.7+ only (xcoll
-        # rewrites its sources for older BDSIM, which we do not replicate).
-        depends_on("bdsim@1.7.7:", type=("build", "link", "run"))
+        # before it agrees to start the engine. BDSIM <= 1.7.7 is handled by
+        # patch() below, at the cost of tipped collimator jaws.
+        depends_on("bdsim", type=("build", "link", "run"))
         depends_on("geant4", type=("build", "link", "run"))
         # Runs BDSIM in a separate rpyc server process so that the Geant4
         # engine can be stopped and restarted within one python session
@@ -87,6 +86,17 @@ class PyXcoll(PythonPackage):
         return join_path(
             self.stage.source_path, "xcoll", "scattering_routines", "geant4", "scattering_src"
         )
+
+    @when("+geant4 ^bdsim@:1.7.7")
+    def patch(self):
+        # Same source adaptation xcoll's own Geant4Interface.compile() applies
+        # for BDSIM older than '1.7.7.develop' (i.e. up to the 1.7.7 release):
+        # the link bunch class had its SixTrack-era name, and there is no
+        # AddLinkCollimatorTipJaw, so tipped jaws fall back to plain jaws.
+        with working_dir(self._g4interface_src):
+            for name in ("BDSXtrackInterface.hh", "BDSXtrackInterface.cpp"):
+                filter_file("BDSLinkBunch", "BDSBunchSixTrackLink", name, string=True)
+                filter_file(r"^.*// BDSIM >= 1\.7\.7\.develop\s*\n", "", name)
 
     @run_after("install", when="+geant4")
     def build_g4interface(self):

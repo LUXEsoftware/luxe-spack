@@ -111,11 +111,17 @@ packages:
   # xcoll's Geant4 hand-over (via BDSIM) needs xcoll >= 0.7, i.e. xsuite >= 0.37
   # (0.36.7 pins xcoll 0.6.2, which has no Geant4 engine). +geant4 builds the
   # xcoll <-> BDSIM interface module at install time; require it on py-xcoll too
-  # so it can't silently be concretized away.
+  # so it can't silently be concretized away. +prebuilt_kernels: xsuite >= 0.37
+  # won't track without prebuilt kernels (or explicitly allowed JIT).
   py-xsuite:
-    require: '@0.62.2 +geant4'
+    require: '@0.62.2 +geant4 +prebuilt_kernels'
   py-xcoll:
     require: '+geant4'
+  # 1.7.8 is the first release with the xcoll link API (BDSLinkBunch,
+  # AddLinkCollimatorTipJaw). py-xcoll still builds against older BDSIM, but
+  # without tipped collimator jaws.
+  bdsim:
+    require: '@1.7.8'
 
   py-poetry:
     require: '@1.8.5'

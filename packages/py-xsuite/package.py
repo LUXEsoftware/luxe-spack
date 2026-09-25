@@ -22,6 +22,10 @@ class PyXsuite(PythonPackage):
     variant("cuda", default=False, description="Enable CUDA backend via CuPy")
     variant("geant4", default=True, when="@0.37:",
             description="Enable the Xcoll Geant4 (BDSIM) scattering engine")
+    # Since 0.37 xsuite refuses to JIT-compile tracking kernels unless allowed
+    # to, and expects them prebuilt in xsuite/lib (as shipped in the wheels).
+    variant("prebuilt_kernels", default=True, when="@0.37:",
+            description="Compile the CPU tracking kernels at install time")
 
     depends_on("python@3.11:", type=("build", "run"), when="@0.62:")
 
@@ -65,12 +69,18 @@ class PyXsuite(PythonPackage):
     depends_on("py-xcoll~geant4", type=("build", "run"), when="~geant4")
 
     def setup_build_environment(self, env):
-        # Don't precompile the tracking kernels into the install prefix; they
-        # are compiled (and cached) on first use. The variable was renamed in
-        # xsuite 0.37.
-        env.set("SKIP_KERNEL_BUILD", "1")
-        env.set("XSUITE_SKIP_KERNEL_BUILD", "1")
+        if self.spec.satisfies("+prebuilt_kernels"):
+            env.set("XSUITE_KERNEL_BUILD_THREADS", str(make_jobs))
+        else:
+            env.set("SKIP_KERNEL_BUILD", "1")  # xsuite <= 0.36
+            env.set("XSUITE_SKIP_KERNEL_BUILD", "1")
         # The version is otherwise derived from git metadata (setuptools-scm),
         # which a release tarball does not have.
         if not self.spec.satisfies("@main"):
             env.set("SETUPTOOLS_SCM_PRETEND_VERSION", str(self.version))
+
+    def setup_run_environment(self, env):
+        # Kernels not covered by the prebuilt set (other element combinations,
+        # user-defined elements, or ~prebuilt_kernels) are compiled on the fly
+        # instead of raising PrebuiltKernelNotFoundError, as in xsuite <= 0.36.
+        env.set("XSUITE_ALLOW_KERNEL_COMPILATION", "1")
