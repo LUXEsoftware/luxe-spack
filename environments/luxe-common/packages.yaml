@@ -115,8 +115,12 @@ packages:
   # won't track without prebuilt kernels (or explicitly allowed JIT).
   py-xsuite:
     require: '@0.62.2 +geant4 +prebuilt_kernels'
+  # g4interface is compiled with the flags BDSIM's CMake config imports from
+  # Geant4 (Geant4_CXX_FLAGS), which are compiler specific - the clang-built
+  # Geant4 exports -Qunused-arguments, which gcc rejects. Use the same C++
+  # compiler as the rest of the stack.
   py-xcoll:
-    require: '+geant4'
+    require: '+geant4 %cxx=clang'
   # 1.7.8 is the first release with the xcoll link API (BDSLinkBunch,
   # AddLinkCollimatorTipJaw). py-xcoll still builds against older BDSIM, but
   # without tipped collimator jaws.

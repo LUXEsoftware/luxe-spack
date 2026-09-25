@@ -67,6 +67,8 @@ class PyXcoll(PythonPackage):
         depends_on("py-xtrack@0.114.1:", type=("build", "run"))
 
     with when("+geant4"):
+        # Must be the compiler family Geant4 was built with: BDSIM's CMake
+        # config pulls in Geant4_CXX_FLAGS, which are compiler specific.
         depends_on("cxx", type="build")
         depends_on("cmake@3.21:", type="build")
         depends_on("py-pybind11", type=("build", "link"))
