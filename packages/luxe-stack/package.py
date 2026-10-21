@@ -72,7 +72,7 @@ class LuxeStack(BundlePackage, Key4hepPackage):
     with when('+pytools'):
         # Python tools
         depends_on('py-h5py')
-        # depends_on('py-ipython')
+        depends_on('py-ipython')
         # depends_on('py-jupytext') # this requires rust and node-js which take too long to compile
         depends_on('py-matplotlib')
         depends_on('py-pandas')
