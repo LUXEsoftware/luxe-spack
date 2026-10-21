@@ -102,11 +102,14 @@ packages:
   #
   # Force the correct triple via --target (clang honours the last --target on
   # the command line, so the spack wrapper's flags override B2's). Scoped to
-  # aarch64 so x86_64 keeps its native triple and does not cross-compile.
+  # aarch64 so x86_64 keeps its native triple and does not cross-compile, and
+  # to clang builds only: --target is a clang flag that gcc rejects, and B2's
+  # gcc toolset does not have the triple bug. The concretizer can put Boost on
+  # gcc (only ptarmigan/py-xcoll are pinned to clang), so this must not apply then.
   boost:
     require:
     - spec: 'cflags="--target=aarch64-linux-gnu" cxxflags="--target=aarch64-linux-gnu" ldflags="--target=aarch64-linux-gnu"'
-      when: 'target=aarch64'
+      when: 'target=aarch64 %cxx=clang'
 
   # xcoll's Geant4 hand-over (via BDSIM) needs xcoll >= 0.7, i.e. xsuite >= 0.37
   # (0.36.7 pins xcoll 0.6.2, which has no Geant4 engine). +geant4 builds the
