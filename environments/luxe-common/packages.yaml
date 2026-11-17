@@ -2,7 +2,7 @@
 packages:
   all:
     target: [x86_64, aarch64]
-    variants: build_type=Release cxxstd=20
+    variants: build_type=Release
     buildable: true
 
   # Use the system OpenGL as recommended by spack
@@ -144,7 +144,7 @@ packages:
     require: '@main'
 
   acts:
-    require: '@main+dd4hep+json cxxstd=20'
+    require: '@main+dd4hep+json'
 
   k4actstracking:
     require: '@main'
