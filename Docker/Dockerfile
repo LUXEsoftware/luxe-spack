@@ -28,11 +28,24 @@ RUN apt update && apt install -y wget && \
 # clang resource dir). The all-clang stack compiles OpenMP extensions with
 # `clang -fopenmp` (e.g. py-numba's numba.np.ufunc.omppool); without it the build
 # fails with "'omp.h' file not found".
+#
+# The stack is built with gcc-14: Ubuntu's default gcc 13 reports __cplusplus as
+# 202100L under -std=c++23, which breaks packages guarding on 202302L (dd4hep).
+# The unversioned cc/gcc/g++/gfortran names (needed e.g. by rustc as its linker)
+# point to gcc-14 through update-alternatives. xz-utils, bzip2 and gnupg used to
+# come in through build-essential (dpkg-dev); spack needs xz/bzip2 to unpack
+# source archives and gpg for buildcache signing.
 
 RUN apt update -y && apt upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
-    build-essential git python3 unzip gfortran file curl wget pkg-config rsync tzdata libgl1-mesa-dev libglu1-mesa libglu1-mesa-dev libkrb5-dev \
+    gcc-14 g++-14 gfortran-14 libc6-dev make xz-utils bzip2 gnupg \
+    git python3 unzip file curl wget pkg-config rsync tzdata libgl1-mesa-dev libglu1-mesa libglu1-mesa-dev libkrb5-dev \
     llvm-20 llvm-20-dev clang-20 lld-20 libomp-20-dev libzstd-dev zlib1g-dev && \
+    for tool in gcc g++ gfortran cpp gcc-ar gcc-nm gcc-ranlib gcov; do \
+        update-alternatives --install /usr/bin/${tool} ${tool} /usr/bin/${tool}-14 100; \
+    done && \
+    update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-14 100 && \
+    update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-14 100 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -66,7 +79,7 @@ RUN . /opt/setup_spack.sh && \
     spack repo set --destination "/opt/spack-packages" builtin
 
 # Configure spack: padded install paths (buildcache relocation) and system compilers.
-# Register gcc/gfortran (build-essential). clang is NOT registered here on purpose:
+# Register gcc-14/gfortran-14. clang is NOT registered here on purpose:
 # the LLVM 20 clang compiler is declared authoritatively (with its compiler paths)
 RUN . /opt/setup_spack.sh && \
     spack config add 'config:install_tree:padded_length:128' && \
