@@ -2,7 +2,7 @@
 packages:
   all:
     target: [x86_64, aarch64]
-    variants: build_type=Release
+    variants: build_type=Release cxxstd=23
     buildable: true
 
   # Use the system OpenGL as recommended by spack
