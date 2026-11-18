@@ -32,7 +32,7 @@ class Bdsim(CMakePackage):
     # the stack BDSIM compiles and links against, which is what actually decides
     # the ABI. Keeping geant4 and root on the same standard here avoids linking a
     # C++11 Geant4 against a C++17 ROOT.
-    _cxxstd_values = ("11", "14", "17", "20")
+    _cxxstd_values = ("11", "14", "17", "20", "23")
     variant(
         "cxxstd",
         default="17",

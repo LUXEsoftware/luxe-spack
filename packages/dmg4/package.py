@@ -28,7 +28,7 @@ class Dmg4(CMakePackage):
     # standard on the default build path (it only inherits flags from
     # Geant4_USE_FILE), so we pin it explicitly to keep the ABI consistent with
     # the Geant4 (and GSL) it links against.
-    _cxxstd_values = ("11", "14", "17", "20")
+    _cxxstd_values = ("11", "14", "17", "20", "23")
     variant(
         "cxxstd",
         default="17",
